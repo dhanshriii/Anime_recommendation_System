@@ -1,0 +1,14 @@
+2024-11-24T23:23:20,368 Using pip 24.3.1 from C:\00 - Data Science\9-Recommendation_system\Anime_Recommendation\venv\Lib\site-packages\pip (python 3.11)
+2024-11-24T23:23:20,370 Non-user install because user site-packages disabled
+2024-11-24T23:23:21,322 Created temporary directory: C:\Users\Lenovo\AppData\Local\Temp\pip-build-tracker-i_dinjgu
+2024-11-24T23:23:21,322 Initialized build tracking at C:\Users\Lenovo\AppData\Local\Temp\pip-build-tracker-i_dinjgu
+2024-11-24T23:23:21,323 Created build tracker: C:\Users\Lenovo\AppData\Local\Temp\pip-build-tracker-i_dinjgu
+2024-11-24T23:23:21,324 Entered build tracker: C:\Users\Lenovo\AppData\Local\Temp\pip-build-tracker-i_dinjgu
+2024-11-24T23:23:21,329 Created temporary directory: C:\Users\Lenovo\AppData\Local\Temp\pip-install-zq4sgz11
+2024-11-24T23:23:21,334 Created temporary directory: C:\Users\Lenovo\AppData\Local\Temp\pip-ephem-wheel-cache-oqm3nma3
+2024-11-24T23:23:21,393 Requirement already satisfied: pillow==9.5.0 in c:\00 - data science\9-recommendation_system\anime_recommendation\venv\lib\site-packages (9.5.0)
+2024-11-24T23:23:21,407 Created temporary directory: C:\Users\Lenovo\AppData\Local\Temp\pip-unpack-ytjvoc4o
+2024-11-24T23:23:22,383 Remote version of pip: 24.3.1
+2024-11-24T23:23:22,383 Local version of pip:  24.3.1
+2024-11-24T23:23:22,390 Was pip installed by pip? True
+2024-11-24T23:23:22,391 Removed build tracker: 'C:\\Users\\Lenovo\\AppData\\Local\\Temp\\pip-build-tracker-i_dinjgu'
