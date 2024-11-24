@@ -6,9 +6,9 @@ from sklearn.metrics.pairwise import linear_kernel
 # Load the dataset
 @st.cache_data
 def load_data():
-    anime = pd.read_csv("c:/00 - Data science/2-dataset/anime.csv", encoding='utf8')
+    url = 'https://raw.githubusercontent.com/dhanshriii/Anime_recommendation_System/master/anime.csv'
+    anime = pd.read_csv(url, encoding='utf8')
     anime['genre'] = anime['genre'].fillna('general')  # Fill missing genres with 'general'
-    anime['name'] = anime['name'].str.lower()  # Convert all anime names to lowercase
     return anime
 
 # Preprocess and create cosine similarity matrix
