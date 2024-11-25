@@ -6,7 +6,8 @@ from sklearn.metrics.pairwise import linear_kernel
 # Load the dataset
 @st.cache_data
 def load_data():
-    anime = pd.read_csv("https://github.com/dhanshriii/Anime_recommendation_System/blob/master/anime.csv", encoding='utf8')
+    url = 'https://raw.githubusercontent.com/dhanshriii/Anime_recommendation_System/master/anime.csv'
+    anime = pd.read_csv(url, encoding='utf8')
     anime['genre'] = anime['genre'].fillna('general')  # Fill missing genres with 'general'
     return anime
 
