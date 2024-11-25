@@ -1,66 +1,60 @@
 import streamlit as st
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import linear_kernel
 
-# Load the dataset from the provided URL
+# Load the dataset
 @st.cache_data
-def load_dataset():
-    url = "https://raw.githubusercontent.com/dhanshriii/Anime_recommendation_System/master/anime.csv"
-    data = pd.read_csv(url)
-    return data
+def load_data():
+    anime = pd.read_csv("c:/00 - Data science/2-dataset/anime.csv", encoding='utf8')
+    anime['genre'] = anime['genre'].fillna('general')  # Fill missing genres with 'general'
+    return anime
 
-# Function to preprocess and compute similarity matrix
+# Preprocess and create cosine similarity matrix
 @st.cache_data
-def compute_similarity(data, column):
-    tfidf = TfidfVectorizer(stop_words="english")
-    tfidf_matrix = tfidf.fit_transform(data[column].fillna(""))
-    similarity_matrix = cosine_similarity(tfidf_matrix, tfidf_matrix)
-    return similarity_matrix
+def create_similarity_matrix(anime):
+    tfidf = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf.fit_transform(anime['genre'])
+    cosine_sim_matrix = linear_kernel(tfidf_matrix, tfidf_matrix)
+    anime_index = pd.Series(anime.index, index=anime['name']).drop_duplicates()
+    return cosine_sim_matrix, anime_index
 
-# Function to get recommendations
-def recommend_anime(anime_name, data, similarity_matrix, top_n=5):
-    if anime_name not in data["name"].values:
-        st.warning("Anime not found in the dataset. Please try another name.")
+# Recommendation function
+def get_recommendations(Name, topN, cosine_sim_matrix, anime_index, anime):
+    try:
+        anime_id = anime_index[Name]
+    except KeyError:
+        st.error("Anime not found in the dataset. Please try a different title.")
         return pd.DataFrame()
+    cosine_scores = list(enumerate(cosine_sim_matrix[anime_id]))
+    cosine_scores = sorted(cosine_scores, key=lambda x: x[1], reverse=True)
+    cosine_scores_N = cosine_scores[0: topN + 1]
+    anime_idx = [i[0] for i in cosine_scores_N]
+    anime_scores = [i[1] for i in cosine_scores_N]
+    anime_similar_show = pd.DataFrame({
+        'name': anime.loc[anime_idx, 'name'],
+        'score': anime_scores
+    }).reset_index(drop=True)
+    return anime_similar_show
 
-    # Find the index of the anime
-    anime_index = data[data["name"] == anime_name].index[0]
-    similarity_scores = list(enumerate(similarity_matrix[anime_index]))
-    similarity_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
-    similarity_scores = similarity_scores[1 : top_n + 1]  # Exclude the anime itself
-
-    # Fetch recommendations
-    recommended_indices = [i[0] for i in similarity_scores]
-    recommendations = data.iloc[recommended_indices]
-    recommendations = recommendations.assign(score=[i[1] for i in similarity_scores])
-    return recommendations
-
-# Streamlit app
+# Streamlit interface
 st.title("Anime Recommendation System")
+st.write("Enter your favorite anime, and we'll recommend similar ones!")
 
-# Load dataset
-anime_data = load_dataset()
-if anime_data is not None:
-    st.write("### Dataset Loaded Successfully!")
-    st.write(anime_data.head())  # Display the first few rows of the dataset
-    
-    # Select feature column for recommendations
-    feature_column = st.selectbox("Select a feature for recommendations:", anime_data.columns)
-    
-    if st.button("Compute Similarity"):
-        similarity_matrix = compute_similarity(anime_data, feature_column)
-        st.success("Similarity matrix computed successfully!")
+anime = load_data()
+cosine_sim_matrix, anime_index = create_similarity_matrix(anime)
 
-        # User input
-        anime_name = st.text_input("Enter an anime name for recommendations:")
-        top_n = st.slider("Number of recommendations:", min_value=1, max_value=10, value=5)
+anime_name = st.text_input("Enter the name of an anime:", "")
+top_n = st.slider("Select the number of recommendations:", 1, 20, 10)
 
-        if st.button("Get Recommendations"):
-            if anime_name:
-                recommendations = recommend_anime(anime_name, anime_data, similarity_matrix, top_n)
-                if not recommendations.empty:
-                    st.write("### Recommended Anime:")
-                    st.table(recommendations[["name", "genre", "score"]])
-            else:
-                st.warning("Please enter an anime name.")
+if st.button("Get Recommendations"):
+    if anime_name:
+        recommendations = get_recommendations(anime_name, top_n, cosine_sim_matrix, anime_index, anime)
+        if not recommendations.empty:
+            st.write("### Recommended Anime:")
+            for i, row in recommendations.iterrows():
+                st.write(f"**{i + 1}. {row['name']}** (Score: {row['score']:.2f})")
+        else:
+            st.warning("No recommendations found.")
+    else:
+        st.error("Please enter an anime name.")
